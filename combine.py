@@ -13,10 +13,22 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib
 
+import argparse
+parser = argparse.ArgumentParser('Combines and visualizes textual'+
+                                 ' and visual video segmentation results')
+parser.add_argument('--data', type=str, required=True,
+                    choices=['ina', 'urheiluruutu'],
+                    help='dataset to use')
+parser.add_argument('video', type=str,
+                    help='label of the video, such as 5266518001 or 202000823730')
+args = parser.parse_args()
+
 #print(matplotlib.__version__)
 
-#xset = ''
-xset = 'yle_'
+if args.data=='ina':
+    xset = ''
+if args.data=='urheiluruutu':
+    xset = 'yle_'
 
 def equalize(m):
     v = []
@@ -37,10 +49,7 @@ def equalize(m):
             
     return m
 
-
-assert len(sys.argv)==2
-
-v = sys.argv[1]
+v = args.video
 
 z = np.load('visual-input/'+v+'-eq.npy')
 t = np.load('visual-input/'+v+'-time.npy')
@@ -68,9 +77,9 @@ for i in range(d):
 mm = [ m ] 
 
 vx = v
-if xset=='':
+if args.data=='ina':
     vx = vx[:7]+'_'+vx[-3:]
-elif xset=='yle_':
+elif args.data=='urheiluruutu':
     vx = 'PROG_'+vx[:4]+'_'+vx[4:]
 
 pt = pickle.load(open('textual-input/'+xset+'parts_timestamps.pickle', 'rb'))
