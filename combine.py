@@ -15,6 +15,9 @@ import matplotlib
 
 #print(matplotlib.__version__)
 
+#xset = ''
+xset = 'yle_'
+
 def equalize(m):
     v = []
     for i in range(m.shape[0]):
@@ -39,8 +42,8 @@ assert len(sys.argv)==2
 
 v = sys.argv[1]
 
-z = np.load('data/'+v+'-eq.npy')
-t = np.load('data/'+v+'-time.npy')
+z = np.load('visual-input/'+v+'-eq.npy')
+t = np.load('visual-input/'+v+'-time.npy')
 #print(t)
 
 d = math.ceil(t[-1])
@@ -64,9 +67,14 @@ for i in range(d):
 
 mm = [ m ] 
 
-vx = v[:7]+'_'+v[-3:]
+vx = v
+if xset=='':
+    vx = vx[:7]+'_'+vx[-3:]
+elif xset=='yle_':
+    vx = 'PROG_'+vx[:4]+'_'+vx[4:]
 
-pt = pickle.load(open('Content segmentation/parts_timestamps.pickle', 'rb'))
+pt = pickle.load(open('textual-input/'+xset+'parts_timestamps.pickle', 'rb'))
+#print(pt.keys())
 pt = pt[vx]
 #print(pt)
 ptset = set()
@@ -78,12 +86,12 @@ ptset = list(ptset)
 ptset.sort()
 #print(ptset)
     
-y = pickle.load(open('Content segmentation/subtitle_neighborhood_similarity.pickle',
+y = pickle.load(open('textual-input/'+xset+'subtitle_neighborhood_similarity.pickle',
                      'rb'))
 y = y[vx]
 #print(y.shape)
 
-w = pickle.load(open('Content segmentation/subtitles_timestamps.pickle', 'rb'))
+w = pickle.load(open('textual-input/'+xset+'subtitles_timestamps.pickle', 'rb'))
 w = w[vx]
 #print(w)
 s = w['start']
