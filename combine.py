@@ -25,10 +25,7 @@ args = parser.parse_args()
 
 #print(matplotlib.__version__)
 
-if args.data=='ina':
-    xset = ''
-if args.data=='urheiluruutu':
-    xset = 'yle_'
+xset = args.data+'_'
 
 def equalize(m):
     v = []
