@@ -71,9 +71,13 @@ visual-input/<VIDEO_LABEL>-eq.npy
 The above files contain per video the end time points of the visual
 shots as detected by Flow and the matrices of shot-wise mutual
 distance values. The raw distance values have been provided as such
-and after histogram equalization to range [0,1].  The files are
-produced with PicSOM using ResNet-152 features extracted from the
-middle frames of the shots.
+and after histogram equalization to range [0,1].  `combine.py` uses
+only the histogram equalized values.  If Flow has detected `N` shot
+boundaries, then the length of the time point vector is `N+1` and
+the last value tells the duration of the program.  Similarly, the
+matrix is of the size `N+1 x N+1`.  These files are produced with
+PicSOM using ResNet-152 features extracted from the middle frames 
+of the shots.
 
 ### outputs
 
