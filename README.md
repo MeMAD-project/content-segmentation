@@ -53,12 +53,12 @@ textual-input/<DATA>_subtitles_timestamps.pickle
 textual-input/<DATA>_subtitle_title_similarity.pickle
 ```
 
-<DATA> is either `ina` or `urheiluruutu`.
+`<DATA>` is either `ina` or `urheiluruutu`.
 
 The above files contain for all videos in the dataset the ground truth
 segment boundaries, timestamps of the subtitles and a matrix of
 subtitle-wise mutual similarity values.  Files are produced with
-!!!ISMAIL FILL IN!!!
+`text_segemt.py`.
 
 ```
 visual-input/<VIDEO_LABEL>-time.npy
@@ -66,7 +66,7 @@ visual-input/<VIDEO_LABEL>-raw.npy
 visual-input/<VIDEO_LABEL>-eq.npy
 ```
 
-<VIDEO_LABEL> consists of the digits of the video filenames.
+`<VIDEO_LABEL>` consists of the digits of the video filenames.
 
 The above files contain per video the end time points of the visual
 shots as detected by Flow and the matrices of shot-wise mutual
