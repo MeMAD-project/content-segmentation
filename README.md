@@ -5,7 +5,7 @@ Repository used for the development of methods for automatic content segmentatio
 ## text_segment.py
 Used to generate segment boundary candidates based on the provided subtitles.
 
-
+```
 usage: text_segment.py [-h] [-s SUBTITLES_PATH] [-o OUTPUT_PATH]
                        [-w WINDOW_SIZE] [-am {average,product}]
                        [-sm {minima,lowest}]
