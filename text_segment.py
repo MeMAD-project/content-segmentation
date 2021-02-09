@@ -2,6 +2,7 @@ import os
 import time
 import json
 import pysrt
+import pickle
 import argparse
 
 import pandas as pd
@@ -12,7 +13,7 @@ from sentence_transformers import models, SentenceTransformer, util
 parser = argparse.ArgumentParser(description='Textual Content Segmentation')
 
 parser.add_argument("-s", "--subtitles_path", type=str, help="Path to the subtitles path")
-parser.add_argument("-o", "--output_path", type=str, help="Path to save results.")
+parser.add_argument("-o", "--output_path", type=str, help="Path to save results.", default="./")
 parser.add_argument("-w", "--window_size", type=int, help="Neighborhood size for similarity.", default=3)
 parser.add_argument("-am", "--aggregation_method", help="", choices=['average', 'product'], default='average')
 parser.add_argument("-sm", "--scoring_method", help="", choices=['minima', 'lowest'], default='minima')
@@ -78,7 +79,7 @@ print(' done.')
 print('Embedding the subtitles..')
 embeddings = sbert.encode(df.content.values.tolist(), convert_to_tensor=True, show_progress_bar=True)
 
-res = util.pytorch_cos_sim(embeddings, embeddings)
+res = util.pytorch_cos_sim(embeddings, embeddings).numpy()
 
 times = process_program(sim_matrix = res, 
                         subtitle_end_times = df.end.values, 
@@ -86,7 +87,17 @@ times = process_program(sim_matrix = res,
                         aggregation_method = args.aggregation_method, 
                         scoring_method = args.scoring_method)
 
-results = pd.DataFrame(times, columns=['times', 'scores'])
-results.to_csv(args.output_path, index=False)
+output_filename = os.path.join(args.output_path, os.path.basename(args.subtitles_path).split('.')[0])
 
-print('Results saved at', args.output_path)
+print('Segmentation candidates saved at', output_filename + '.csv')
+
+results = pd.DataFrame(times, columns=['times', 'scores'])
+results.to_csv(output_filename + '.csv', index=False)
+
+data_dict = {'start': df.start_s.values.tolist(),
+             'end': df.end_s.values.tolist(), 
+             'similarity': res}
+
+pickle.dump(data_dict, open(output_filename + '.pickle', 'wb'))
+
+print('Segmentation data and similarity scores saved at', output_filename + '.pickle')
