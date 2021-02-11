@@ -264,11 +264,15 @@ axs[1, 2].matshow(mm[2], interpolation=ip)
 plt.savefig(vx+'.png', dpi=200)
 
 midxx = [ (1, 'txt') , (0, 'vis'), (2, 'sum') , (3, 'mul') ]
-
+json_out = dict()
 out = open(vx+'.txt', 'w')
 for midx, mnam in midxx:
     #print(midx, mnam, mmseg[midx])
     print(mnam, end=' ', file=out)
+    json_out[mnam] = []
     for i, j in mmseg[midx]:
         print('({} {:.4f})'.format(i, j), end=' ', file=out)
+        json_out[mnam].append( { 'pos': int(i), 'score': j } )
     print(file=out)
+
+json.dump(json_out, open(vx+'.json', 'w'), indent=4)
