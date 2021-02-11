@@ -7,6 +7,7 @@ import pickle
 import numpy as np
 import sys
 import math
+import json
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -16,16 +17,24 @@ import matplotlib
 import argparse
 parser = argparse.ArgumentParser('Combines and visualizes textual'+
                                  ' and visual video segmentation results')
-parser.add_argument('--data', type=str, required=True,
+parser.add_argument('--data', type=str,
                     choices=['ina', 'urheiluruutu'],
                     help='dataset to use')
+parser.add_argument('--visual-segment-matrix', type=str,
+                    help='pickle result from text-based segmentation')
+parser.add_argument('--visual-shot-boundaries', type=str,
+                    help='pickle result from text-based segmentation')
+parser.add_argument('--text-segment-result', type=str,
+                    help='pickle result from text-based segmentation')
 parser.add_argument('video', type=str,
                     help='label of the video, such as 5266518001 or 202000823730')
+                    
 args = parser.parse_args()
 
 #print(matplotlib.__version__)
 
-xset = args.data+'_'
+if args.data:
+    xset = args.data+'_'
 
 def equalize(m):
     v = []
@@ -48,8 +57,15 @@ def equalize(m):
 
 v = args.video
 
-z = np.load('visual-input/'+v+'-eq.npy')
-t = np.load('visual-input/'+v+'-time.npy')
+if args.visual_segment_matrix:
+    z = np.array(json.load(open(args.visual_segment_matrix, 'rb')))
+else:
+    z = np.load('visual-input/'+v+'-eq.npy')
+    
+if args.visual_shot_boundaries:
+    t = json.load(open(args.visual_shot_boundaries, 'rb'))
+else:
+    t = np.load('visual-input/'+v+'-time.npy')
 #print(t)
 
 d = math.ceil(t[-1])
@@ -79,9 +95,16 @@ if args.data=='ina':
 elif args.data=='urheiluruutu':
     vx = 'PROG_'+vx[:4]+'_'+vx[4:]
 
-pt = pickle.load(open('textual-input/'+xset+'parts_timestamps.pickle', 'rb'))
-#print(pt.keys())
-pt = pt[vx]
+if args.text_segment_result:
+    text_segment_results = pickle.load(open(args.text_segment_result, 'rb'))
+    #pt = text_segment_results['similarities']
+    pt = {}
+    pt['start'] = []
+    pt['end'] = []
+else:
+    pt = pickle.load(open('textual-input/'+xset+'parts_timestamps.pickle', 'rb'))
+    pt = pt[vx]
+
 #print(pt)
 ptset = set()
 for i in pt['start']:
@@ -91,18 +114,25 @@ for i in pt['end']:
 ptset = list(ptset)
 ptset.sort()
 #print(ptset)
-    
-y = pickle.load(open('textual-input/'+xset+'subtitle_neighborhood_similarity.pickle',
+
+if args.text_segment_result:
+    y = text_segment_results['similarity']
+else:    
+    y = pickle.load(open('textual-input/'+xset+'subtitle_neighborhood_similarity.pickle',
                      'rb'))
-y = y[vx]
+    y = y[vx]
 #print(y.shape)
 
-w = pickle.load(open('textual-input/'+xset+'subtitles_timestamps.pickle', 'rb'))
-w = w[vx]
-#print(w)
-s = w['start']
-e = w['end']
-#print(len(s))
+if args.text_segment_result:
+    s = text_segment_results['start']
+    e = text_segment_results['end']
+else:
+    w = pickle.load(open('textual-input/'+xset+'subtitles_timestamps.pickle', 'rb'))
+    w = w[vx]
+    #print(w)
+    s = w['start']
+    e = w['end']
+    #print(len(s))
 
 x = []
 for i in range(d):
