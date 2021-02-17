@@ -4,15 +4,17 @@ Repository used for the development of methods for automatic content segmentatio
 
 ## text_segment.py
 Used to generate segment boundary candidates based on the provided subtitles.
+When given a `<filename>.srt` file as input, this script would produce 2 files at the output path folder:
+* `<filename>.csv`: containing the segments boundaries suggested by the method (ordered by scores, from the most to the least likely)
+* `<filename>.pickle`: a pickle object containing the start and end time for each subtitle (as arrays), as well as the similarity matrix for all subtitles in the input file.
 
+To run the script:
 ```
 usage: text_segment.py [-h] [-s SUBTITLES_PATH] [-o OUTPUT_PATH]
                        [-w WINDOW_SIZE] [-am {average,product}]
                        [-sm {minima,lowest}]
 
-Textual Content Segmentation
-
-optional arguments:
+Arguments:
   -h, --help            show this help message and exit
   -s SUBTITLES_PATH, --subtitles_path SUBTITLES_PATH
                         Path to the subtitles path
