@@ -17,6 +17,8 @@ import matplotlib
 import argparse
 parser = argparse.ArgumentParser('Combines and visualizes textual'+
                                  ' and visual video segmentation results')
+parser.add_argument('--min-length', type=int,
+                    help='minimum segment length to consider as valid')
 parser.add_argument('--data', type=str,
                     choices=['ina', 'urheiluruutu'],
                     help='dataset to use')
@@ -33,8 +35,10 @@ args = parser.parse_args()
 
 #print(matplotlib.__version__)
 
+# set some global variables based on argument input
 if args.data:
     xset = args.data+'_'
+min_length = args.min_length if args.min_length else 10
 
 def equalize(m):
     v = []
@@ -222,7 +226,7 @@ for i in range(len(mm)):
     mm[i] = np.concatenate((mm[i], seg, gt))
 
     segs = []
-    l = 10
+    l = min_length
     while True:
         mi = np.argmax(vvv)
         if vvv[mi]<=0:
@@ -275,4 +279,6 @@ for midx, mnam in midxx:
         json_out[mnam].append( { 'pos': int(i), 'score': j } )
     print(file=out)
 
-json.dump(json_out, open(vx+'.json', 'w'), indent=4)
+json.dump(json_out, open(vx+'.json', 'w'), indent=2)
+
+print('Wrote output to ' + vx+'.json')
